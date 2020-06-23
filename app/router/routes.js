@@ -5,11 +5,12 @@ const KoaBody = require('koa-body');
 const bodyParser = require('koa-bodyparser'); 
 const convert = require('koa-convert');
 
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 const path = require('path');
 
 const Router = require('koa-router');
 
+const getFunc = require('../controllers/get_dbFunc');
 //const session = require('koa-session');
 //const session = require("koa-session2");
 
@@ -27,31 +28,6 @@ let router = new Router(app);
 //app.use(session(app));
 
 
-
-//let page1 = require('../../public/internal_phone.js');
-//let pageStat = require('../../public/test_statistic.js');
-//let pageWarehouse = require('../../public/warehouse.js');
-
-//let pageManagerHome = require('../../public/managerhome.js');
-//let pageUserHome = require('../../public/userhome.js');
-
-//let arrPerson = require('../models/contact.js');
-//console.log("arrPerson in INDEX is")
-//console.log(arrPerson)
-
-//let employeeSchema = require('../schema/employee');
-//let contactModel = mongoose.model('Contact', employeeSchema);
-
-
-/** Connect DB */
-//mongoose.connect('mongodb://192.168.0.236:27017/indoorsite', {useNewUrlParser: true});
-mongoose.connect(config.database.master.host, {useUnifiedTopology: true, useNewUrlParser: true});
-let db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  // we're connected!
-  console.log('db connected');
-});
 
 /** Search all contact */
 let dataDB = [];
@@ -81,13 +57,13 @@ let koaBody = convert(KoaBody());
         //.all('/create', async (ctx, next) => {
         //  console.log('all req')
         //})
-        .get('/', async (ctx, next) => {
+        // .get('/', async (ctx, next) => {
             
-            //    ctx.body = (path.join(__dirname, './public/login.html'));
-            ctx.path = '/';
-            //console.log(ctx,  ctx.path, {root:  catalog + '/employee_to_work.html'});
-            await send(ctx,  ctx.path, {root:  catalog + '/login.html'});
-            ctx.status = 200;
+        //     //    ctx.body = (path.join(__dirname, './public/login.html'));
+        //     ctx.path = '/';
+        //     //console.log(ctx,  ctx.path, {root:  catalog + '/employee_to_work.html'});
+        //     await send(ctx,  ctx.path, {root:  catalog + '/login.html'});
+        //     ctx.status = 200;
             // ctx.set({
             //     'Etag': '1234',
             //     'Last-Modified': "bla-bla-bla",
@@ -102,9 +78,9 @@ let koaBody = convert(KoaBody());
             //})
 
             //await send(ctx, ctx.path, { powerr:'my_power'});
-          console.log('GET req - app send home page')
+        //   console.log('GET req - app send home page')
 
-        })
+        // })
 
         .get('/manager', bodyParser(), async (ctx, next) => {
             console.log('MANAGER GET Route Requested');
@@ -132,29 +108,13 @@ let koaBody = convert(KoaBody());
 
         })
 
-
-        .get('/test2', async (ctx, next) => {
-          console.log('Test GET Route Requested');
-          //console.log(ctx.request.body);
-          //ctx.status = 200;
-          ctx.response.body = "Hi Lotus 2";
-          ctx.status = 302;
-          ctx.response.redirect('/employee')
-
-        })
-        .get('/test3', async (ctx, next) => {
-          console.log('Test GET Route Requested');
-          //console.log(ctx.request.body);
-          //ctx.status = 200;
-          ctx.response.body = "Hi Lotus 3";
-          
-        })
-        .post('/test', async (ctx, next) => {
+        .get('/users/:id', bodyParser(), async (ctx, next) => {
           console.log('Test POST Route Requested');
-          console.log(ctx.req.body);
+          //console.log(ctx.req.body);
           //console.log(ctx.req)
           ctx.status = 200;
-          ctx.response.body = "Hi Lotus";
+          //ctx.response.body = "Hi Lotus" + ctx.params.id;
+          ctx.response.body = getFunc(ctx.params.id);
         })
 
         //* login register route
@@ -213,14 +173,14 @@ let koaBody = convert(KoaBody());
 
         })
 
-        .get('/logout', bodyParser(), async (ctx, next) => {
-          //console.log(dbFunc.getAllUserData());
-          console.log('Logout route requested');
-          ctx.session.username = '';
-          ctx.session.usertype = '';
-          ctx.res.status = 302;
-          ctx.redirect('/');
-        })
+        // .get('/logout', bodyParser(), async (ctx, next) => {
+        //   //console.log(dbFunc.getAllUserData());
+        //   console.log('Logout route requested');
+        //   ctx.session.username = '';
+        //   ctx.session.usertype = '';
+        //   ctx.res.status = 302;
+        //   ctx.redirect('/');
+        // })
 
         .post('/', bodyParser(), async (ctx, next) => {
             console.log('post req - app send home page')
@@ -278,26 +238,6 @@ let koaBody = convert(KoaBody());
           ctx.status = 205;
 
       })
-
-
-        // .post('/create', bodyParser(), async (ctx, next) => {
-        //     console.log('second do for post req - app send home page action /delete')
-        //     //ctx.status = 205;
-        //     //console.log (ctx.params);
-        //     //console.log ('/delete');
-        //     //console.log (await ctx.request.body);
-        //     //let contactUser = new contactModel(await ctx.request.body);
-        //     //contactUser.save();
-
-        //     await GetDataContact();
-        //     await dataPromis.then(function () {
-        //         ctx.body = page1(arrPerson, dataDB);
-        //     })
-        //     ctx.status = 205;
-
-        // })
-
-
         .delete('/', bodyParser(), async (ctx, next) => {
             console.log('post req - app send home page action /delete')
             
@@ -454,39 +394,10 @@ let koaBody = convert(KoaBody());
             ctx.status = 401;
             ctx.response.body = 'Access denies';
         }
-        })
-        ;
-
-
-        //const IO = require('koa-socket-2');
-        //const io = new IO();
-        //io.attach(app);
-  
-      //   io.use( async ( ctx, next ) => {
-      //     ctx.teststring = 'test';
-      // });
-  
-        io.on('connection', (ctx, data) => {
-          
-          console.log('IO client sent data to message endpoint');
-          //io.broadcast( 'response' );
-          ctx.emit( 'message', { hello: 'worldD' } );
-          ctx.emit( 'data', { hello: 'world1', JSONS: {id1: 1 , id2: 2, id3: 3} } );
-          ctx.on('message', (data) => {
-              console.log(data)
-          })
         });
-  
-      //   io.on( 'data', ( ctx, data ) => {
-      //     console.log( 'data event', data );
-      //     console.log( 'ctx:', ctx.event, ctx.data, ctx.id );
-      //     console.log( 'ctx.teststring:', ctx.teststring );
-      //     ctx.socket.emit( 'response', {
-      //       message: 'response from server'
-      //     });
-      // });
-  
-  
+
+
+
   //       function RemoveContact (Todo, req, res) {
   //         Todo.findByIdAndRemove(req.params.todoId, (err, todo) => {
   //           // As always, handle any potential errors:
@@ -521,7 +432,3 @@ let koaBody = convert(KoaBody());
 
 exports.routes = router.routes();
 exports.allowedMethods = router.allowedMethods();
-
-
-//export function routes () { return router.routes() }
-//export function allowedMethods () { return router.allowedMethods() }

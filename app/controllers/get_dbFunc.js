@@ -45,26 +45,26 @@ function insertStatistic() {
 }
 
 
-let db = new sqlite3.Database('bitmedia.db', (err) => {
-    if (err) {
+// let db = new sqlite3.Database('bitmedia.db', (err) => {
+//     if (err) {
 
-        console.log(err);
-        if (err.errno == 14) {
-            console.log("True")
-            createDb();
+//         console.log(err);
+//         if (err.errno == 14) {
+//             console.log("True")
+//             //createDb();
             
-        }      //return console.error(err.message);
+//         }      //return console.error(err.message);
       
-    }
+//     }
 
-    console.log('Connected to SQlite database.');
+//     console.log('Connected to SQlite database.');
 
 
 
     //db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='lorem'", function(error, row) {
 	//	if (row !== undefined) {}})
 
-  } );
+//   } );
 
   function checkTable(table){
     db.get(`SELECT name FROM sqlite_master WHERE type='table' AND name='${table}'`, function(error, searchTable) {
@@ -83,8 +83,28 @@ let db = new sqlite3.Database('bitmedia.db', (err) => {
     })
   }
   
-  dataFileStat[0];
-  checkTable(tableUser);
-  checkTable(tableStat);
+  //dataFileStat[0];
+  //checkTable(tableUser);
+  //checkTable(tableStat);
+  //db.close();
 
-  exports.func = func();
+  function func (x){
+    let db = new sqlite3.Database('bitmedia.db');
+    let val;
+    db.all(`SELECT * FROM ${tableUser} LIMIT 50 OFFSET ${(x-1)*50};`, (error, rows) => {
+            if (error){console.log(error)}
+		    //if (row !== undefined) {
+                //console.log(row);
+                rows.forEach((row) => {
+                    console.log(row);
+                  });
+                  val = rows;
+            //}
+        })
+    return val
+
+      
+  }
+
+  //exports.func = func();
+  module.exports = func;
