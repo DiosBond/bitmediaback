@@ -80,7 +80,18 @@ const tableStat = "users_statistic";
           //console.log("new Rows", newRows.then((data)=>{console.log(data)}))
           return await newRows.then(function(data){return data})
     }
+    let GetUsersStat = (id) => {
+        let dataStatPromis = new Promise ((res,rej) => {
+            db.all(`SELECT page_views, clicks FROM ${tableStat} WHERE user_id=${id};`, (error, rows) => {
+                    res(rows)
+                }
+            )
+        });
+        return dataStatPromis.then(function(data){return data})
 
+        //return "YA"
+    }
 
     //exports.func = func();
-    module.exports = GetUsersFunc;
+    module.exports.data = GetUsersFunc;
+    module.exports.stat = GetUsersStat;
