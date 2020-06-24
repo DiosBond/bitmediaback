@@ -5,44 +5,6 @@ const tableUser = "users";
 const tableStat = "users_statistic";
 
 
-function createDb() {
-    console.log("createDb bitmedia");
-    db = new sqlite3.Database('bitmedia.sqlite3');
-    //db = new sqlite3.Database('bitmedia.sqlite3', createTable);
-};
-
-function createTableUsers() {
-    console.log("createTable users");
-    db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, first_name TEXT, last_name TEXT, email EMAIL, gender TEXT, ip_address TEXT)", insertUsers);
-}
-
-function createTableStat() {
-    db.run("CREATE TABLE IF NOT EXISTS users_statistic (user_id INTEGER, date DATE, page_views INTEGER, clicks INTEGER)", insertStatistic);
-}
-
-function insertUsers() {
-    console.log("start insertUsers");
-    let stmt = db.prepare("INSERT INTO users VALUES (?,?,?,?,?,?)");
-
-    dataFileUser.forEach(elem => {
-        // id, first_name, last_name, email, gender, ip_address
-        stmt.run(elem.id, elem.first_name, elem.last_name, elem.email, elem.gender, elem.ip_address);
-        })
-    console.log("create table from JSON USER")
-    //stmt.finalize(readAllRows);
-}
-
-function insertStatistic() {
-    console.log("start insertStatistic");
-    let stmt = db.prepare("INSERT INTO users_statistic VALUES (?, ?, ?, ?)");
-
-    dataFileStat.forEach(elem => {
-        //user_id, date, page_views, clicks
-        stmt.run(elem.user_id, elem.date, elem.page_views, elem.clicks);
-    })
-    console.log("create table from JSON STAT")
-    //stmt.finalize(readAllRows);
-}
 
 
 // let db = new sqlite3.Database('bitmedia.db', (err) => {
@@ -66,45 +28,83 @@ function insertStatistic() {
 
 //   } );
 
-  function checkTable(table){
-    db.get(`SELECT name FROM sqlite_master WHERE type='table' AND name='${table}'`, function(error, searchTable) {
-        console.log("table", searchTable);
-        if (searchTable == undefined) {
-            console.log("no table", table);
-            switch (table) {
-                case tableUser :
-                    createTableUsers();
-                break;
-                case tableStat :
-                    createTableStat();
-                break;
-            }
-      }
-    })
-  }
+//   function checkTable(table){
+//     db.get(`SELECT name FROM sqlite_master WHERE type='table' AND name='${table}'`, function(error, searchTable) {
+//         console.log("table", searchTable);
+//         if (searchTable == undefined) {
+//             console.log("no table", table);
+//             switch (table) {
+//                 case tableUser :
+//                     createTableUsers();
+//                 break;
+//                 case tableStat :
+//                     createTableStat();
+//                 break;
+//             }
+//       }
+//     })
+//   }
   
-  //dataFileStat[0];
-  //checkTable(tableUser);
-  //checkTable(tableStat);
+
   //db.close();
 
-  function func (x){
-    let db = new sqlite3.Database('bitmedia.db');
-    let val;
-    db.all(`SELECT * FROM ${tableUser} LIMIT 50 OFFSET ${(x-1)*50};`, (error, rows) => {
-            if (error){console.log(error)}
-		    //if (row !== undefined) {
-                //console.log(row);
-                rows.forEach((row) => {
-                    console.log(row);
-                  });
-                  val = rows;
-            //}
+  let dataPromis = {};
+  function GetDataContact(){
+    dataPromis = new Promise((res,rej) => {
+        contactModel.find({}, 
+            //await function(err, name) {
+            function(err, data) {
+                 if (err) {
+                   next(err)
+                 } else {
+                    //console.log("GET DATA")
+                    res(dataDB = data)
+                    //console.log(dataDB)
+                 }
+            })
         })
-    return val
+    };
 
-      
-  }
+    let db = new sqlite3.Database('bitmedia.db');
 
-  //exports.func = func();
-  module.exports = func;
+    //* function for get users by page number
+    function GetUsersFunc (x){
+        dataPromis = new Promise((res,rej) => {
+            db.all(`SELECT * FROM ${tableUser} LIMIT 1 OFFSET ${(x-1)*50};`, (error, rows) => {
+                if (error){
+                    console.log(error)
+                }
+                if (rows !== undefined) {
+                    //console.log(row);
+                    rows.forEach((row) => {
+                        console.log(row);
+                        GetTotal(row.id)
+                      });
+                    }
+                    res(rows);
+                    //console.log(rows)
+                //}
+            })     
+            })
+            return dataPromis;
+    }
+
+    //* get clicks and views by user id
+    function GetTotal(id){
+        db.all(`SELECT page_views, clicks FROM ${tableStat} WHERE user_id=${id};`, (error, rows) => {
+            let countViews = 0;
+            let countClicks = 0;
+
+            rows.forEach((el) => {
+
+                countViews = countViews + el.page_views;
+                countClicks = countClicks + el.clicks;
+            })
+            console.log(rows)
+            console.log(countClicks, countViews)
+        }
+        )
+    }
+
+    //exports.func = func();
+    module.exports = GetUsersFunc;

@@ -54,59 +54,6 @@ function GetDataContact(){
 let koaBody = convert(KoaBody());
 
     router
-        //.all('/create', async (ctx, next) => {
-        //  console.log('all req')
-        //})
-        // .get('/', async (ctx, next) => {
-            
-        //     //    ctx.body = (path.join(__dirname, './public/login.html'));
-        //     ctx.path = '/';
-        //     //console.log(ctx,  ctx.path, {root:  catalog + '/employee_to_work.html'});
-        //     await send(ctx,  ctx.path, {root:  catalog + '/login.html'});
-        //     ctx.status = 200;
-            // ctx.set({
-            //     'Etag': '1234',
-            //     'Last-Modified': "bla-bla-bla",
-            //     powerr: "powerr"
-            //   });
-
-            // await GetDataContact();
-            // await dataPromis.then(function () {
-            //     ctx.body = page1(arrPerson, dataDB);
-            //     ctx.res.statusCode = 200;
-
-            //})
-
-            //await send(ctx, ctx.path, { powerr:'my_power'});
-        //   console.log('GET req - app send home page')
-
-        // })
-
-        .get('/manager', bodyParser(), async (ctx, next) => {
-            console.log('MANAGER GET Route Requested');
-            //console.log(ctx.request.body);
-            //ctx.status = 200;
-            if (ctx.session.usertype == 'admin') {
-                //console.log(ctx.session.usertype)
-                
-                await GetDataContact();
-                await dataPromis.then(function () {
-                    ctx.body = pageManagerHome(ctx.session.username, arrPerson, dataDB);
-                    ctx.res.statusCode = 200;
-                })
-                //ctx.status = 200;
-                //ctx.response.body = ctx.session.username;
-
-            }
-            else {
-                ctx.status = 401;
-                ctx.response.body = 'Access denies';
-            }
-            
-            //ctx.status = 302;
-            //ctx.response.redirect('/employee')
-
-        })
 
         .get('/users/:id', bodyParser(), async (ctx, next) => {
           console.log('Test POST Route Requested');
@@ -114,64 +61,11 @@ let koaBody = convert(KoaBody());
           //console.log(ctx.req)
           ctx.status = 200;
           //ctx.response.body = "Hi Lotus" + ctx.params.id;
-          ctx.response.body = getFunc(ctx.params.id);
+          ctx.response.body = await getFunc(ctx.params.id).then(function(data){return data});
         })
 
         //* login register route
-        .post('/login', bodyParser(), async (ctx, next) => {
-            //console.log(dbFunc.getAllUserData());
-            console.log('IP', ctx.request.ip)
-            let arrUsers = await dbFunc.getAllUserData();
-            let f_user;
-            console.log(await ctx.request.body);
-            // поиск пользователя в массиве users 
-            for (let i = 0; i < arrUsers.length; i++) {
-                console.log(arrUsers.length)
-                let user = arrUsers[i];
-
-                console.log("User", user.name, user.pass)
-
-                if ((user.name == ctx.request.body.username) && (user.pass == ctx.request.body.password)) {
-                    f_user = {
-                        name : user.name,
-                        type : user.type
-                    }
-              
-                    break;
-                }
-            };
-            console.log("Finded and verif user from db", f_user)
-        
-              // ignore favicon
-  //if (ctx.path === '/favicon.ico') return;
-  // app.use(async (ctx, next) => {
-  //   this.session.username = 'james';
-  //   this.session.type = 'admin'
-
-            if (f_user !== undefined) {
-                ctx.session.username = f_user.name;
-                ctx.session.usertype = f_user.type;
-                console.log("Login is OK: ", ctx.request.body.username);
-                console.log("Session usertype", ctx.session.usertype)
-
-      
-                if (f_user.type == "admin") {
-                    ctx.body = '/manager';  //***send route for page*/
-       
-                }
-                else {
-                    ctx.response.redirect(301, 'user')
-                }
-            } else {
-            console.log("Login error by user: ", ctx.request.body.username)
-            ctx.res.status = 401
-            ctx.body = 'Login or password error';
-              }
-      
-
-
-
-        })
+ 
 
         // .get('/logout', bodyParser(), async (ctx, next) => {
         //   //console.log(dbFunc.getAllUserData());
@@ -261,21 +155,6 @@ let koaBody = convert(KoaBody());
         })
 
 
-        .get('/warehouse', async (ctx, next) => {
-          ctx.set({
-            'Etag': '1234',
-            'Last-Modified': "bla-bla-bla",
-            powerr: "warehouse"
-          });
-       
-        await GetDataContact();
-        await dataPromis.then(function () {
-            ctx.body = pageWarehouse(arrPerson, dataDB);
-            ctx.res.statusCode = 200;
-
-        })
-      })
-
 
         .get('/stat', async (ctx, next) => {
             ctx.set({
@@ -317,14 +196,7 @@ let koaBody = convert(KoaBody());
 
             
         })
-        .get('/books/:id', async (ctx, next) => {
-            let result = await product.get(ctx.params.id);
-            if (result) {
-                ctx.body = result
-            } else {
-                ctx.status = 204;
-            }
-        })
+
   
         // .post('/', async (ctx, next) => {
         //     //ctx.status = 200;
@@ -339,10 +211,7 @@ let koaBody = convert(KoaBody());
         //     //ctx.body = await books_func.create(ctx.request.body);
         //     await send(ctx, ctx.path, { root: catalog + '/index.html' });
         // })
-        .put('/books/:id', koaBody, async (ctx, next) => {
-            ctx.status = 204;
-            await product.update(ctx.params.id, ctx.request.body);
-        })
+
         
         //**User routes */
         .get('/user', async (ctx, next) => {
