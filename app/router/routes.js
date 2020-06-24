@@ -198,21 +198,7 @@ let koaBody = convert(KoaBody());
         })
 
   
-        // .post('/', async (ctx, next) => {
-        //     //ctx.status = 200;
-        //     console.log('post req');
-        //     ctx.status = 204;
-        //     await send(ctx, ctx.path, { root: catalog + '/index.html' });
-        // })
-        // .post('/create', koaBody, async (ctx, next) => {
-        //     console.log('post create req');
-        //     ctx.status = 204;
-        //     console.log(await ctx.request.body)
-        //     //ctx.body = await books_func.create(ctx.request.body);
-        //     await send(ctx, ctx.path, { root: catalog + '/index.html' });
-        // })
-
-        
+       
         //**User routes */
         .get('/user', async (ctx, next) => {
             console.log('Requested user route');
@@ -239,64 +225,7 @@ let koaBody = convert(KoaBody());
           }
         })
         
-        //**Test routes */
-        .get('/getCity', async (ctx, next) => {
-          console.log('Requested getCity route');
-          if (ctx.session.usertype == 'user' | ctx.session.usertype == 'admin') {
-            ctx.body = await npFunc.getAllCities();
-            //ctx.body = await npFunc.getWarehouseCity('125bfa12-dadf-11e9-b48a-005056b24375')
-
-          }
-          else {
-            ctx.status = 401;
-            ctx.response.body = 'Access denies';
-        }
-        })
-        .get('/getWarehouse', async (ctx, next) => {
-          console.log('Requested getCity route');
-          if (ctx.session.usertype == 'user' | ctx.session.usertype == 'admin') {
-            //ctx.body = await npFunc.getAllCities();
-            ctx.body = await npFunc.getWarehouseCity('125bfa12-dadf-11e9-b48a-005056b24375')
-
-          }
-          else {
-            ctx.status = 401;
-            ctx.response.body = 'Access denies';
-        }
-        });
-
-
-
-  //       function RemoveContact (Todo, req, res) {
-  //         Todo.findByIdAndRemove(req.params.todoId, (err, todo) => {
-  //           // As always, handle any potential errors:
-  //           if (err) return res.status(500).send(err);
-  //           // We'll create a simple object to send back with a message and the id of the document that was removed
-  //           // You can really do this however you want, though.
-  //           const response = {
-  //               message: "Todo successfully deleted",
-  //               id: todo._id
-  //           };
-  //           return res.status(200).send(response);
-  //       });
-  //   }
-  
-    function RemoveContact (id, Todo, req, res) {
-      //contactModel.findByIdAndRemove(id, (err, todo) => {
-          contactModel.findByIdAndDelete(id, (err, todo) => {
-              console.log("deletion")
-        // As always, handle any potential errors:
-      //   if (err) return res.status(500).send(err);
-        // We'll create a simple object to send back with a message and the id of the document that was removed
-        // You can really do this however you want, though.
-        //const response = {
-        //    message: "Todo successfully deleted",
-      //       id: todo._id
-      //   };
-        //return res.status(200).send(response);
-    });
-    GetDataContact();
-  }
+       
 
 
 exports.routes = router.routes();
