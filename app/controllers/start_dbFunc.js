@@ -7,7 +7,7 @@ const tableStat = "users_statistic";
 
 function createDb() {
     console.log("createDb bitmedia");
-    db = new sqlite3.Database('bitmedia.sqlite3');
+    db = new sqlite3.Database('bitmedia.db');
     //db = new sqlite3.Database('bitmedia.sqlite3', createTable);
 };
 
@@ -59,10 +59,6 @@ let db = new sqlite3.Database('bitmedia.db', (err) => {
 
     console.log('Connected to SQlite database.');
 
-
-
-    //db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='lorem'", function(error, row) {
-	//	if (row !== undefined) {}})
 
   } );
 
