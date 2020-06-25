@@ -1,9 +1,7 @@
 const Koa = require('koa');
-
-//const send = require('koa-send');
-//const KoaBody = require('koa-body');
 const bodyParser = require('koa-bodyparser'); 
 //const convert = require('koa-convert');
+//const KoaBody = require('koa-body');
 
 const Router = require('koa-router');
 
@@ -13,23 +11,26 @@ const Validate = require('../controllers/validate');
 const app = new Koa();
 let router = new Router(app);
 
-console.log(Validate.asDate("11/11/2011"));
-console.log(Validate.asNumber("11/11/2011"));
 //let koaBody = convert(KoaBody());
-// Router
+//* Router
     router
         .get('/users/:id', bodyParser(), async (ctx, next) => {
           console.log('user id Route Requested');
           ctx.status = 200;
-          //ctx.response.body = "Hi Lotus" + ctx.params.id;
-          ctx.response.body = await GetFunc.data(ctx.params.id).then(function(data){return data});
+          //* Validate number page
+          console.log(Validate.asNumber(ctx.params.id))
+          if (!Validate.asNumber(ctx.params.id)) {
+              ctx.response.body = await GetFunc.data(ctx.params.id).then(function(data){return data})
+          };
         })
 
         .get('/stat/:id', bodyParser(), async (ctx, next) => {
           console.log('stat id Route Requested');
           ctx.status = 200;
-          //ctx.response.body = "Hi Lotus" + ctx.params.id;
-          ctx.response.body = await GetFunc.stat(ctx.params.id);
+          //* Validate as number id user
+          if (!Validate.asNumber(ctx.params.id)) {
+              ctx.response.body = await GetFunc.stat(ctx.params.id);
+          }
         })
 
      
