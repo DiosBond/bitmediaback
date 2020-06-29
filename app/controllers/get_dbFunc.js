@@ -9,36 +9,21 @@ const tableStat = "users_statistic";
 
     //* function for get users by page number
     async function GetUsersFunc (x){
-        
+       
         dataPromis = new Promise((res,rej) => {
-            db.all(`SELECT * FROM ${tableUser} LIMIT 50 OFFSET ${(x-1)*50};`, (error, rows) => {
+            db.all(`SELECT * FROM ${tableUser} LIMIT 50 OFFSET ${(x-1)*50};`,async (error, rows) => {
                 if (error){
-                    console.log(error)
+                    console.log("Error ", error)
                 }
-                let rows2 = addValue(rows)
-                res(rows);
+                else {
+                    let rows2 = addValue(rows);
+                    res(rows2)
+                }
             }
-
             )     
-            })
-                 //!!! not work is back map array
-                // .then(rows2 => {
-                // return new Promise((res, rej) => {
-                //         let rows3 = rows2.map(async function (row) {
-                //         obj1 = GetTotal(row.id);
-                //         obj2 = Object.assign(row, await obj1.then(data => {return data}));
-                //         console.log('RR P', obj2);
-                //         return obj2
-                // })
-
-                //     console.log(rows3)
-                //     res(rows3)
-                // })
-                // })
-
-           
-        return dataPromis;
-  
+        })
+     
+        return await dataPromis
     }
 
     //* get clicks and views by user id
@@ -59,22 +44,22 @@ const tableStat = "users_statistic";
                 }
             )
         });
-        return await dataTotalPromis.then(function(data){return data})
+
+        return await dataTotalPromis.then(async function(data){return await data})
     }
     
     //* function for attach data of user
     async function addValue(rows){
-        let newRows = new Promise ((res,rej) => {
-                let rows2 = rows.map(async function (row) {
+        let newRows = new Promise (async (res,rej) => {
+                let rows2 = rows.map(async (row) => {
                         obj1 = GetTotal(row.id);
-                        obj2 = Object.assign(row, await obj1.then(data => {return data}));
-                        console.log('RR', obj2);
+                        obj2 = Object.assign(row, await obj1.then(async data => {return data}));
                         return obj2
                 });
                 res(rows2)
         });
         
-          return await newRows.then(function(data){return data})
+          return await newRows
     }
 
      //* get all statistic by user id
@@ -85,6 +70,7 @@ const tableStat = "users_statistic";
                 }
             )
         });
+       
         return dataStatPromis.then(function(data){return data})
     }
 

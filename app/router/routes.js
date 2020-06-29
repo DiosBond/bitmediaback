@@ -14,21 +14,25 @@ let router = new Router(app);
 //let koaBody = convert(KoaBody());
 //* Router
     router
-        .get('/users/:id', bodyParser(), async (ctx, next) => {
-          console.log('user id Route Requested');
+        .get('/users/:page', bodyParser(), async (ctx, next) => {
+          console.log('stat Route Requested with page', ctx.params.page);
           ctx.status = 200;
           //* add allow CORS
-          ctx.set('Access-Control-Allow-Origin', origin);
+          ctx.set('Access-Control-Allow-Origin', "*");
 
           //* Validate number page
-          console.log(Validate.asNumber(ctx.params.id))
-          if (!Validate.asNumber(ctx.params.id)) {
-              ctx.response.body = await GetFunc.data(ctx.params.id).then(function(data){return data})
+          if (!Validate.asNumber(ctx.params.page)) {
+              let data = await GetFunc.data(ctx.params.page);
+
+              await Promise.all(data).then(val => {
+                //console.log("prom route all", val);
+                ctx.response.body = val}
+                )
           };
         })
 
         .get('/stat/:id', bodyParser(), async (ctx, next) => {
-          console.log('stat id Route Requested');
+          console.log('users id', ctx.params.id, 'Route Requested');
           ctx.status = 200;
           //* add allow CORS
           ctx.set('Access-Control-Allow-Origin', "*");
